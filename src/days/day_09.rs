@@ -33,7 +33,7 @@ impl D for Day {
                     //println!("front {size}");
 
                     for _ in 0..size {
-                        println!("{id_front} * {pos}");
+                        //println!("{id_front} * {pos}");
                         res += id_front * pos;
                         pos += 1;
                     }
