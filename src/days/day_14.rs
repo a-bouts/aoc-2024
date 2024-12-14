@@ -65,22 +65,15 @@ impl D for Day {
             robots.push((caps["px"].parse::<i64>().unwrap(), caps["py"].parse::<i64>().unwrap(), caps["vx"].parse::<i64>().unwrap(), caps["vy"].parse::<i64>().unwrap()));
         }
 
-        let (mut a, mut b, mut c, mut d) = (0, 0, 0, 0);
+        const W: usize = 101;
+        const H: usize = 103;
 
-        const w: usize = 101;
-        const h: usize = 103;
+        let width = W as i64;
+        let height = H as i64;
 
-        let width = w as i64;
-        let height = h as i64;
-
-        let mut turn = 5427718;
-        loop {
-            if turn % 1000000 == 0 {
-                println!("{turn}");
-            }
-
-            let mut ok = true;
-            let mut map = [[0; w]; h];
+        let mut turn = 0;
+        while turn < 10403 {
+            let mut map = [[0; W]; H];
             for r in &robots {
 
                 let (mut x, mut y) = ((r.0 + turn * r.2) % width, (r.1 + turn * r.3) % height);
@@ -91,26 +84,13 @@ impl D for Day {
                 if y < 0 {
                     y += height;
                 }
-
-                if y == 0 && x != 50
-                || y == 1 && (x < 49 || x > 51) {
-                        ok = false;
-                    break
-                }
-                // if y > 95 && (x < 40 || x > 60)
-                // || x + y < 50  {
-                //     ok = false;
-                //     break
-                // }
     
                 map[y as usize][x as usize] += 1;
             }
 
-            if ok {
-                for i in 0..h {
-                    println!("{}", map[i].iter().map(|n| if n == &0 { '.' } else { '#' }).collect::<String>());
-                }
-                break
+            println!("{turn}");
+            for i in 0..H {
+                println!("{}", map[i].iter().map(|n| if n == &0 { '.' } else { '#' }).collect::<String>());
             }
     
             turn += 1;
