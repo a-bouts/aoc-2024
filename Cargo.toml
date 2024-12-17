@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [features]
-default = ["day-14"]
+default = ["day-17"]
 day-1 = []
 day-2 = []
 day-3 = []
