@@ -1,4 +1,5 @@
 use std::fs::read_to_string;
+use anyhow::Result;
 
 crate::day!(day_01, "day-1");
 crate::day!(day_02, "day-2");
@@ -50,20 +51,30 @@ pub(crate) trait Day {
     }
 
     fn run_part_one(&self) {
-        let res = self.part_one();
-
-        println!("\nResult : [{res}]\n");
+        match self.part_one() {
+            Ok(res) => {
+                println!("\nResult : [{res}]\n");
+            }
+            Err(e) => {
+                println!("/nError : {:?}", e);
+            }
+        }
     }
 
-    fn part_one(&self) -> i64;
+    fn part_one(&self) -> Result<i64>;
 
     fn run_part_two(&self) {
-        let res = self.part_two();
-
-        println!("\nResult : [{res}]\n");
+        match self.part_two() {
+            Ok(res) => {
+                println!("\nResult : [{res}]\n");
+            }
+            Err(e) => {
+                println!("/nError : {:?}", e);
+            }
+        }
     }
 
-    fn part_two(&self) -> i64;
+    fn part_two(&self) -> Result<i64>;
 }
 
 #[macro_export]
@@ -73,6 +84,8 @@ macro_rules! day {
         pub(crate) mod $mod;
         #[cfg(not(feature = $feature))]
         pub(crate) mod $mod {
+            use anyhow::Result;
+
             use crate::days::Day as D;
 
             pub(crate) struct Day {
@@ -84,12 +97,12 @@ macro_rules! day {
                     }
                 }
 
-                fn part_one(&self) -> i64 {
+                fn part_one(&self) -> Result<i64> {
 
                     todo!()
                 }
 
-                fn part_two(&self) -> i64 {    
+                fn part_two(&self) -> Result<i64> {    
                 
                     todo!()
                 }       
@@ -104,26 +117,30 @@ macro_rules! test {
         #[cfg(test)]
         mod tests {
 
+            use anyhow::Result;
+
             use super::*;
 
             #[test]
-            fn part_one() {
+            fn part_one() -> Result<()> {
 
                 let exo: Day = Day::from_sample(
                     indoc::indoc! { $p1_in }
                 );
 
-                assert_eq!($p1_out, exo.part_one());
+                assert_eq!($p1_out, exo.part_one()?);
+                Ok(())
             }
 
             #[test]
-            fn part_two() {
+            fn part_two() -> Result<()> {
 
                 let exo: Day = Day::from_sample(
                     indoc::indoc! { $p2_in }
                 );
 
-                assert_eq!($p2_out, exo.part_two());
+                assert_eq!($p2_out, exo.part_two()?);
+                Ok(())
             }
         }
     }
