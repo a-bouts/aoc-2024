@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [features]
-default = ["day-17"]
+default = ["day-21"]
 day-1 = []
 day-2 = []
 day-3 = []
@@ -23,7 +23,7 @@ day-15 = []
 day-16 = []
 day-17 = []
 day-18 = []
-day-19 = []
+day-19 = ["dep:rayon"]
 day-20 = ["dep:divisors"]
 day-21 = []
 day-22 = []
@@ -34,6 +34,7 @@ day-25 = []
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+anyhow = "1.0.94"
 divisors = { version = "0.2.1", optional = true }
 humantime = "2.1.0"
 indoc = "2"
