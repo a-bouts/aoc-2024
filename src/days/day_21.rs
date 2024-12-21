@@ -259,15 +259,15 @@ impl D for Day {
             paths.insert(path.0, path.1);
         }
 
-        fn resolve(paths: &HashMap<(char, char), Vec<String>>, code: &String, n: usize, cache: &mut Vec<HashMap<String, Vec<String>>>, is_in_cache: &mut i64, is_not_in_cache: &mut i64) {
+        fn resolve(paths: &HashMap<(char, char), Vec<String>>, code: &String, n: usize, cache: &mut Vec<HashMap<String, usize>>, is_in_cache: &mut i64, is_not_in_cache: &mut i64) -> usize {
 
             if cache[n].contains_key(code) {
                 *is_in_cache += 1;
-                return
+                return *cache[n].get(code).unwrap();
             }
             *is_not_in_cache += 1;
 
-            let res: &mut Vec<String> = &mut vec![];
+            let mut res = 0;
 
             let codes = code.chars().collect::<Vec<_>>();
 
@@ -279,8 +279,7 @@ impl D for Day {
                     let mut min = -1;
                     let mut min_p = "";
                     for p in ps {
-                        resolve(paths, p, n - 1, cache, is_in_cache, is_not_in_cache);
-                        let len = cache[n-1].get(p).unwrap().iter().map(|a| a.len()).sum::<usize>() as isize;
+                        let len = resolve(paths, p, n - 1, cache, is_in_cache, is_not_in_cache) as isize;
                         if min < 0 || len < min {
                             min = len;
                             min_p = p;
@@ -290,10 +289,10 @@ impl D for Day {
                     //let ps = ps.iter().map(|p| resolve(paths, p, n - 1, cache, is_in_cache, is_not_in_cache)).collect::<Vec<_>>();
 
                     //let min = &mut ps.iter().min_by(|a, b| a.iter().map(|a| a.len()).sum::<usize>().cmp(&b.iter().map(|b| b.len()).sum::<usize>())).unwrap().clone();
-                    res.append(&mut cache[n-1].get(min_p).unwrap().clone());
+                    res += min as usize;
                 } else {
                     let min = ps.iter().min_by(|a, b| a.len().cmp(&b.len())).unwrap();
-                    res.push(min.clone());
+                    res += min.len();
                 }
 
                 prev = codes[i];
@@ -306,6 +305,8 @@ impl D for Day {
             for i in 0..cache.len() {
                 println!("{i} : {}", cache[i].len());
             }
+
+            res
         }
         
         let cache = &mut vec![];
@@ -319,10 +320,9 @@ impl D for Day {
         for code in &self.input {
             println!("\n{}", code);
 
-            resolve(&paths, &code, 25, cache, is_in_cache, is_not_in_cache);
-            let codes = cache[2].get(code).unwrap();
+            let len = resolve(&paths, &code, 25, cache, is_in_cache, is_not_in_cache);
 
-            res += code.trim_end_matches(|c| c == 'A').parse::<i64>().unwrap() * codes.iter().map(|c| c.len()).sum::<usize>() as i64;
+            res += code.trim_end_matches(|c| c == 'A').parse::<i64>().unwrap() * len as i64;
         }
 
         Ok(res)
