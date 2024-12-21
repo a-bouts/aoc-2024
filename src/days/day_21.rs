@@ -259,11 +259,13 @@ impl D for Day {
             paths.insert(path.0, path.1);
         }
 
-        fn resolve(paths: &HashMap<(char, char), Vec<String>>, code: &String, n: usize, cache: &mut HashMap<usize, HashMap<String, Vec<String>>>) -> Vec<String> {
+        fn resolve(paths: &HashMap<(char, char), Vec<String>>, code: &String, n: usize, cache: &mut Vec<HashMap<String, Vec<String>>>, is_in_cache: &mut i64, is_not_in_cache: &mut i64) {
 
-            if cache.contains_key(&n) && cache.get(&n).unwrap().contains_key(code) {
-                return cache.get(&n).unwrap().get(code).unwrap().clone();
+            if cache[n].contains_key(code) {
+                *is_in_cache += 1;
+                return
             }
+            *is_not_in_cache += 1;
 
             let res: &mut Vec<String> = &mut vec![];
 
@@ -274,10 +276,21 @@ impl D for Day {
                 let ps: &Vec<String> = paths.get(&(prev, codes[i])).unwrap();
 
                 if n > 0 {
-                    let ps = ps.iter().map(|p| resolve(paths, p, n - 1, cache)).collect::<Vec<_>>();
+                    let mut min = -1;
+                    let mut min_p = "";
+                    for p in ps {
+                        resolve(paths, p, n - 1, cache, is_in_cache, is_not_in_cache);
+                        let len = cache[n-1].get(p).unwrap().iter().map(|a| a.len()).sum::<usize>() as isize;
+                        if min < 0 || len < min {
+                            min = len;
+                            min_p = p;
+                        }
+                    }
+                    
+                    //let ps = ps.iter().map(|p| resolve(paths, p, n - 1, cache, is_in_cache, is_not_in_cache)).collect::<Vec<_>>();
 
-                    let min = &mut ps.iter().min_by(|a, b| a.iter().map(|a| a.len()).sum::<usize>().cmp(&b.iter().map(|b| b.len()).sum::<usize>())).unwrap().clone();
-                    res.append(min);
+                    //let min = &mut ps.iter().min_by(|a, b| a.iter().map(|a| a.len()).sum::<usize>().cmp(&b.iter().map(|b| b.len()).sum::<usize>())).unwrap().clone();
+                    res.append(&mut cache[n-1].get(min_p).unwrap().clone());
                 } else {
                     let min = ps.iter().min_by(|a, b| a.len().cmp(&b.len())).unwrap();
                     res.push(min.clone());
@@ -286,16 +299,28 @@ impl D for Day {
                 prev = codes[i];
             }
 
-            cache.entry(n).or_insert(HashMap::new()).entry(code.clone()).or_insert(res.clone());
-            res.clone()
+            cache[n].entry(code.clone()).or_insert(res.clone());
+
+            println!("\n");
+            println!("{is_in_cache} {is_not_in_cache}");
+            for i in 0..cache.len() {
+                println!("{i} : {}", cache[i].len());
+            }
         }
         
-        let cache = &mut HashMap::new();
+        let cache = &mut vec![];
+        for _ in 0..26 {
+            cache.push(HashMap::new());
+        }
+        let is_in_cache = &mut 0;
+        let is_not_in_cache = &mut 0;
+
         let mut res = 0;
         for code in &self.input {
             println!("\n{}", code);
 
-            let codes = resolve(&paths, &code, 25, cache);
+            resolve(&paths, &code, 25, cache, is_in_cache, is_not_in_cache);
+            let codes = cache[2].get(code).unwrap();
 
             res += code.trim_end_matches(|c| c == 'A').parse::<i64>().unwrap() * codes.iter().map(|c| c.len()).sum::<usize>() as i64;
         }
