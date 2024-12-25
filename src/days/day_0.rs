@@ -1,3 +1,5 @@
+use anyhow::Result;
+
 use crate::days::Day as D;
 
 pub(crate) struct Day {
@@ -11,16 +13,16 @@ impl D for Day {
         }
     }
 
-    fn part_one(&self) -> i64 {
+    fn part_one(&self) -> Result<i64> {
         
         for line in &self.input {
             todo!();
         }
 
-        0
+        Ok(0)
     }
 
-    fn part_two(&self) -> i64 {    
+    fn part_two(&self) -> Result<i64> {    
         todo!()
     }
         
